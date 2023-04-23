@@ -18,3 +18,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL94Dialect
+
+
+jwt:
+  secret: M3cyb2k0dXJoZjM5NGdoZjM0OTdnOTQ4dHlyaDA0MjgzaGk4d3JlZ2Y4M3c0Z2Y4NzM0eXRvMzRodDk4aDgmRyomXkY3ZjNyODdnaWhkc2Y=
+  lifetime: 36000000
