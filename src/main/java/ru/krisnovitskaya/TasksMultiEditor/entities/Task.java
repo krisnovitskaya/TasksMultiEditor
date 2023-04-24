@@ -2,18 +2,21 @@ package ru.krisnovitskaya.TasksMultiEditor.entities;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.*;
 import org.springframework.data.annotation.*;
-import org.springframework.data.annotation.Version;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Builder
+@Table(name = "tasks")
 public class Task {
 
     @Id
