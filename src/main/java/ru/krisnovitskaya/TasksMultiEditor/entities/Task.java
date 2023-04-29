@@ -7,6 +7,7 @@ import lombok.*;
 import org.springframework.data.annotation.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -38,6 +39,9 @@ public class Task {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "deadline")
+    private LocalDate deadline;
 
     @Version
     @Column(name = "version")

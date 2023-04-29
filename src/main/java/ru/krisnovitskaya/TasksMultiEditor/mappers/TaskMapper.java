@@ -17,6 +17,7 @@ public class TaskMapper {
                 , userMapper.fromEntity(entity.getController())
                 , entity.getTitle()
                 , entity.getDescription()
+                , entity.getDeadline()
                 , entity.getVersion()
                 , entity.getLastModifiedBy()
                 , entity.getLastModifiedDate()

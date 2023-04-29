@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -12,15 +13,17 @@ import java.time.LocalDateTime;
 public class DiffTaskDto {
     private Long id;
     private Long theirExecutor;
-    private Long youExecutor;
+    private Long yourExecutor;
     private Long theirController;
-    private Long youController;
+    private Long yourController;
     private String theirTitle;
-    private String youTitle;
+    private String yourTitle;
     private String diffTitle;
     private String theirDescription;
-    private String youDescription;
+    private String yourDescription;
     private String diffDescription;
+    private LocalDate theirDeadline;
+    private LocalDate yourDeadline;
     private int theirVersion;
     private String lastModifiedBy;
     private LocalDateTime lastModifiedDate;

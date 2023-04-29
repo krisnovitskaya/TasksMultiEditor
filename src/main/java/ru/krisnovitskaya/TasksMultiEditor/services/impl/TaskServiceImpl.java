@@ -16,6 +16,7 @@ import ru.krisnovitskaya.TasksMultiEditor.repositories.TaskRepository;
 import ru.krisnovitskaya.TasksMultiEditor.repositories.UserRepository;
 import ru.krisnovitskaya.TasksMultiEditor.services.TaskService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class TaskServiceImpl implements TaskService {
         Task taskNew = new Task();
         taskNew.setTitle(newDto.title());
         taskNew.setDescription(newDto.description());
+        taskNew.setDeadline(newDto.deadline() == null ? LocalDate.now() : newDto.deadline());
         userRepository.findById(newDto.controllerId()).ifPresent(taskNew::setController);
         userRepository.findById(newDto.executorId()).ifPresent(taskNew::setExecutor);
         Task taskFromDB = taskRepository.save(taskNew);
@@ -48,18 +50,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     public TaskDto update(UpdateTaskDto updated) {
-        log.info("update start. thread {} {}", Thread.currentThread().getName(), updated);
         Task taskDb = taskRepository.findByIdLock(updated.id()).orElseThrow(() -> new ResourceNotFoundException(String.format("Task with id=%d not exists", updated.id())));
-        if(taskDb.getVersion() > updated.version()){
+        if (taskDb.getVersion() > updated.version()) {
             throw new MultiUpdateException(diffComputeHelper.computeDiff(taskMapper.fromEntity(taskDb), updated));
         }
-        log.info("update lock and sleep. thread {} taskDB vers {}", Thread.currentThread().getName(), taskDb.getVersion());
-        sleep(8000);
-        log.info("update after sleep. thread {}", Thread.currentThread().getName());
-
         updateEntityByDtoValue(taskDb, updated);
         Task saved = taskRepository.saveAndFlush(taskDb);
-        log.info("update saved entity. thread {}. saved version {}", Thread.currentThread().getName(), saved.getVersion());
         return taskMapper.fromEntity(saved);
     }
 
@@ -72,14 +68,6 @@ public class TaskServiceImpl implements TaskService {
         }
         task.setTitle(dto.title());
         task.setDescription(dto.description());
-    }
-
-
-    private void sleep(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        task.setDeadline(dto.deadline());
     }
 }

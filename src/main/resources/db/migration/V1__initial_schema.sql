@@ -26,6 +26,7 @@ create table if not exists tasks(
     controller_id     	bigint,
     title              	varchar(255) not null,
     description     	text not null,
+    deadline            date not null default now(),
     version            	int not null default 0,
     created_by         	varchar(100),
     last_modified_by   	varchar(100),

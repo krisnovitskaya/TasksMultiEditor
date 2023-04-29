@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.DiffTaskDto;
 
+import java.sql.SQLException;
+
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionsHandler {
@@ -20,5 +22,11 @@ public class GlobalExceptionsHandler {
     public ResponseEntity<DiffTaskDto> handleMultiUpdateException(MultiUpdateException e) {
         e.printStackTrace();
         return new ResponseEntity<>(e.getDiffTaskDto(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<AppError> handleDataAccessException(SQLException e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(new AppError("BAD_REQUEST", e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }
