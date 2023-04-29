@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.JwtRequest;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.JwtResponse;
 import ru.krisnovitskaya.TasksMultiEditor.exceptions.AppError;
-import ru.krisnovitskaya.TasksMultiEditor.util.JwtTokenUtil;
+import ru.krisnovitskaya.TasksMultiEditor.utils.JwtTokenUtil;
 
 @RestController
 @RequestMapping("/auth")

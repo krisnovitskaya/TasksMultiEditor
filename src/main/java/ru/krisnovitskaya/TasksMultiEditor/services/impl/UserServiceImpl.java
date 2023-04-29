@@ -8,12 +8,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.krisnovitskaya.TasksMultiEditor.dtos.UserDto;
 import ru.krisnovitskaya.TasksMultiEditor.entities.Role;
 import ru.krisnovitskaya.TasksMultiEditor.entities.User;
+import ru.krisnovitskaya.TasksMultiEditor.exceptions.ResourceNotFoundException;
+import ru.krisnovitskaya.TasksMultiEditor.mappers.UserMapper;
 import ru.krisnovitskaya.TasksMultiEditor.repositories.UserRepository;
 import ru.krisnovitskaya.TasksMultiEditor.services.UserService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -35,5 +40,17 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+    }
+
+    public List<UserDto> findAll() {
+        return userRepository.findAll().stream().map(userMapper::fromEntity).collect(Collectors.toList());
+    }
+
+    public UserDto updateById2() {
+        Long id = 2l;
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format("User with id=%d not exists", id)));
+        user.setUsername(user.getUsername().concat("-upd"));
+        User user1 = userRepository.saveAndFlush(user);
+        return userMapper.fromEntity(user1);
     }
 }

@@ -6,7 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.NewTaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.TaskDto;
+import ru.krisnovitskaya.TasksMultiEditor.dtos.UpdateTaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.services.TaskService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/task")
@@ -23,8 +26,14 @@ public class TaskController {
     }
 
     @PutMapping
-    public TaskDto addNew(@RequestBody TaskDto updated) {
+    public TaskDto update(@RequestBody UpdateTaskDto updated) {
         log.debug("updated from client {}", updated);
         return taskService.update(updated);
+    }
+
+    @GetMapping
+    public List<TaskDto> getAll() {
+        log.debug("get all");
+        return taskService.getAll();
     }
 }

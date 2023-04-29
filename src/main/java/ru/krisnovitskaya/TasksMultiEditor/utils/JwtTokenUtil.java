@@ -1,4 +1,4 @@
-package ru.krisnovitskaya.TasksMultiEditor.util;
+package ru.krisnovitskaya.TasksMultiEditor.utils;
 
 
 import io.jsonwebtoken.Claims;

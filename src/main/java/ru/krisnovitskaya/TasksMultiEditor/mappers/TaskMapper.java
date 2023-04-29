@@ -11,13 +11,15 @@ public class TaskMapper {
     private final UserMapper userMapper;
 
     public TaskDto fromEntity(Task entity) {
-        return TaskDto.builder()
-                .id(entity.getId())
-                .executor(userMapper.fromEntity(entity.getExecutor()))
-                .controller(userMapper.fromEntity(entity.getController()))
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .version(entity.getVersion())
-                .build();
+        return new TaskDto(
+                entity.getId()
+                , userMapper.fromEntity(entity.getExecutor())
+                , userMapper.fromEntity(entity.getController())
+                , entity.getTitle()
+                , entity.getDescription()
+                , entity.getVersion()
+                , entity.getLastModifiedBy()
+                , entity.getLastModifiedDate()
+                );
     }
 }

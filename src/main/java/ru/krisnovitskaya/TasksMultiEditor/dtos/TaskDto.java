@@ -1,23 +1,9 @@
 package ru.krisnovitskaya.TasksMultiEditor.dtos;
 
 
-import lombok.*;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class TaskDto {
-    private Long id;
+public record TaskDto(Long id, UserDto executor, UserDto controller, String title, String description, int version,
+                      String lastModifiedBy, LocalDateTime lastModifiedDate) {
 
-    private UserDto executor;
-
-    private UserDto controller;
-
-    private String title;
-
-    private String description;
-
-    private int version;
 }

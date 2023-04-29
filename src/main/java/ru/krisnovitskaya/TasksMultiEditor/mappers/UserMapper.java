@@ -8,6 +8,6 @@ import ru.krisnovitskaya.TasksMultiEditor.entities.User;
 public class UserMapper {
 
     public UserDto fromEntity(User entity){
-        return new UserDto(entity.getId(), entity.getUsername());
+        return new UserDto(entity.getId(), entity.getUsername(), entity.getEmail());
     }
 }

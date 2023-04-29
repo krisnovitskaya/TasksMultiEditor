@@ -1,5 +1,6 @@
 package ru.krisnovitskaya.TasksMultiEditor.configs;
 
+import com.github.difflib.text.DiffRowGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,5 +23,17 @@ public class AppConfig {
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
                 .map(Authentication::getName);
+    }
+
+
+    @Bean
+    public DiffRowGenerator diffRowGenerator() {
+        return DiffRowGenerator.create()
+                .showInlineDiffs(true)
+                .mergeOriginalRevised(true)
+                .inlineDiffByWord(true)
+                .oldTag(f -> "|")
+                .newTag(f -> "^^")
+                .build();
     }
 }

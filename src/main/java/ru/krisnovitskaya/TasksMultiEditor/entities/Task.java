@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @Table(name = "tasks")
+@ToString
 public class Task {
 
     @Id
