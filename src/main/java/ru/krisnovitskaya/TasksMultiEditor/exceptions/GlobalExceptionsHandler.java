@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.DiffTaskDto;
+import ru.krisnovitskaya.TasksMultiEditor.utils.SecurityUtils;
 
 import java.sql.SQLException;
 
@@ -20,12 +21,13 @@ public class GlobalExceptionsHandler {
 
     @ExceptionHandler
     public ResponseEntity<DiffTaskDto> handleMultiUpdateException(MultiUpdateException e) {
-        e.printStackTrace();
+        log.info("handle MultiUpdateException: username={}, taskId={}", SecurityUtils.getCurrentUser(), e.getDiffTaskDto().getId());
         return new ResponseEntity<>(e.getDiffTaskDto(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> handleDataAccessException(SQLException e) {
+    public ResponseEntity<AppError> handleSQLException(SQLException e) {
+        log.info("handle SQLException: username={}, message={}", SecurityUtils.getCurrentUser(), e.getMessage());
         e.printStackTrace();
         return new ResponseEntity<>(new AppError("BAD_REQUEST", e.getMessage()), HttpStatus.BAD_REQUEST);
     }

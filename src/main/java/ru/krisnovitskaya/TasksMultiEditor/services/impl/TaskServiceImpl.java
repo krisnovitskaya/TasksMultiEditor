@@ -51,7 +51,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public TaskDto update(UpdateTaskDto updated) {
         Task taskDb = taskRepository.findByIdLock(updated.id()).orElseThrow(() -> new ResourceNotFoundException(String.format("Task with id=%d not exists", updated.id())));
-        if (taskDb.getVersion() > updated.version()) {
+        if (taskDb.getVersion() != updated.version()) {
             throw new MultiUpdateException(diffComputeHelper.computeDiff(taskMapper.fromEntity(taskDb), updated));
         }
         updateEntityByDtoValue(taskDb, updated);
