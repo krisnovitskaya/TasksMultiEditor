@@ -1,6 +1,7 @@
 package ru.krisnovitskaya.TasksMultiEditor.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import ru.krisnovitskaya.TasksMultiEditor.services.TaskService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,5 +71,23 @@ public class TaskServiceImpl implements TaskService {
         task.setTitle(dto.title());
         task.setDescription(dto.description());
         task.setDeadline(dto.deadline());
+    }
+
+
+
+    //for test lock only
+    @Transactional
+    @SneakyThrows
+    public long lockTaskRowByTime(Long rowId, long time){
+        long start = System.currentTimeMillis();
+
+        Optional<Task> byIdLock = taskRepository.findByIdLock(rowId);
+        log.info(byIdLock.get().toString());
+
+        Thread.sleep(time);
+
+        long end = System.currentTimeMillis();
+
+        return end - start;
     }
 }
