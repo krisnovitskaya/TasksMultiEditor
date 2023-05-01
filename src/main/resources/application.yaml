@@ -42,4 +42,4 @@ jwt:
 logging:
   level:
     root: INFO
-    ru.krisnovitskaya.TasksMultiEditor: DEBUG
+    ru.krisnovitskaya.TasksMultiEditor: INFO

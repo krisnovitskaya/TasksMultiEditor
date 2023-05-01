@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
@@ -16,7 +14,6 @@ import ru.krisnovitskaya.TasksMultiEditor.dtos.TaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.TaskHistoryDto;
 import ru.krisnovitskaya.TasksMultiEditor.services.MailSenderService;
 import ru.krisnovitskaya.TasksMultiEditor.services.TaskHistoryService;
-import ru.krisnovitskaya.TasksMultiEditor.services.UserService;
 
 @Component
 @RequiredArgsConstructor
@@ -33,8 +30,8 @@ public class TaskChangeListener {
     @JmsListener(destination = JmsConfig.TASK_CREATE)
     public void listenCreate(@Payload TaskDto newTask) throws JsonProcessingException {
         log.debug("listenCreate {}", newTask);
-        mailSenderService.sendMail(newTask.executor().email(), "New Task Assign",objectMapper.writeValueAsString(newTask));
-        if(newTask.controller() != null && !newTask.controller().id().equals(newTask.executor().id())){
+        mailSenderService.sendMail(newTask.executor().email(), "New Task Assign", objectMapper.writeValueAsString(newTask));
+        if (newTask.controller() != null && !newTask.controller().id().equals(newTask.executor().id())) {
             mailSenderService.sendMail(newTask.controller().email(), "New Task to Control", objectMapper.writeValueAsString(newTask));
         }
     }
@@ -44,10 +41,8 @@ public class TaskChangeListener {
         log.debug("update {}", updatedTask);
         TaskHistoryDto historyTaskVersionBefore = historyTaskService.findHistoryByTaskIdAndVersion(updatedTask.id(), updatedTask.version() - 1);
         HistoryDiffTaskDto historyDiffTaskDto = diffComputeHelper.computeHistoryDiff(historyTaskVersionBefore, updatedTask);
-        log.debug("historyTaskVersionBefore {}", historyTaskVersionBefore);
-        log.debug("historyDiffTaskDto {}", historyDiffTaskDto);
         mailSenderService.sendMail(updatedTask.executor().email(), "Task Updated", objectMapper.writeValueAsString(historyDiffTaskDto));
-        if(updatedTask.controller() != null && !updatedTask.controller().id().equals(updatedTask.executor().id())){
+        if (updatedTask.controller() != null && !updatedTask.controller().id().equals(updatedTask.executor().id())) {
             mailSenderService.sendMail(updatedTask.controller().email(), "Task Updated", objectMapper.writeValueAsString(historyDiffTaskDto));
         }
     }
