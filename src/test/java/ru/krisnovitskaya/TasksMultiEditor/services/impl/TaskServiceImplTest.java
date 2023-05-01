@@ -3,8 +3,11 @@ package ru.krisnovitskaya.TasksMultiEditor.services.impl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.DiffTaskDto;
@@ -14,6 +17,7 @@ import ru.krisnovitskaya.TasksMultiEditor.dtos.UpdateTaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.exceptions.MultiUpdateException;
 import ru.krisnovitskaya.TasksMultiEditor.repositories.TaskRepository;
 import ru.krisnovitskaya.TasksMultiEditor.repositories.UserRepository;
+import ru.krisnovitskaya.TasksMultiEditor.services.MailSenderService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,6 +37,9 @@ class TaskServiceImplTest {
 
     @Autowired
     private TaskServiceImpl taskService;
+
+    @MockBean
+    private JmsTemplate jmsTemplate;
 
 
     @Test

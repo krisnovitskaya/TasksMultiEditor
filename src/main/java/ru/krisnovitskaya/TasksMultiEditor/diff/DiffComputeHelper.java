@@ -3,9 +3,7 @@ package ru.krisnovitskaya.TasksMultiEditor.diff;
 import com.github.difflib.text.DiffRowGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.krisnovitskaya.TasksMultiEditor.dtos.DiffTaskDto;
-import ru.krisnovitskaya.TasksMultiEditor.dtos.TaskDto;
-import ru.krisnovitskaya.TasksMultiEditor.dtos.UpdateTaskDto;
+import ru.krisnovitskaya.TasksMultiEditor.dtos.*;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -30,9 +28,34 @@ public class DiffComputeHelper {
                 .theirDescription(old.description())
                 .yourDescription(wanted.description())
                 .diffDescription(diff(old.description(), wanted.description()))
+                .theirDeadline(old.deadline())
+                .yourDeadline(wanted.deadline())
                 .theirVersion(old.version())
                 .lastModifiedBy(old.lastModifiedBy())
                 .lastModifiedDate(old.lastModifiedDate())
+                .build();
+    }
+
+    public HistoryDiffTaskDto computeHistoryDiff(TaskHistoryDto old, TaskDto updated) {
+        return HistoryDiffTaskDto.builder()
+                .id(old.id())
+                .beforeExecutor(old.executorId())
+                .beforeController(old.controllerId())
+                .nowController(updated.controller() != null ? updated.controller().id() : null)
+                .nowExecutor(updated.executor().id())
+                .beforeTitle(old.title())
+                .nowTitle(updated.title())
+                .diffTitle(diff(old.title(), updated.title()))
+                .beforeDescription(old.description())
+                .nowDescription(updated.description())
+                .diffDescription(diff(old.description(), updated.description()))
+                .beforeDeadline(old.deadline())
+                .nowDeadline(updated.deadline())
+                .nowVersion(old.version())
+                .beforeModifiedBy(old.modifiedBy())
+                .beforeModifiedDate(old.modifiedDate())
+                .nowModifiedBy(updated.lastModifiedBy())
+                .nowModifiedDate(updated.lastModifiedDate())
                 .build();
     }
 

@@ -50,24 +50,39 @@ create table if not exists tasks_history(
     modified_date       timestamp
     );
 
-CREATE OR REPLACE FUNCTION tasks_history() RETURNS trigger AS
+create or replace function tasks_history() returns trigger as
 $BODY$
-BEGIN
-    IF TG_OP = 'UPDATE' THEN
-        INSERT INTO tasks_history(operation, task_id, executor_id_new, controller_id_new, title_new, description_new, deadline_new, version, modified_by, modified_date)
-        VALUES ('UPDATE', old.id, new.executor_id, new.controller_id, new.title, new.description, new.deadline, new.version, new.last_modified_by, current_timestamp);
-        RETURN NEW;
+begin
+    if tg_op = 'UPDATE' then
+        insert into tasks_history(operation, task_id, executor_id_new, controller_id_new, title_new, description_new, deadline_new, version, modified_by, modified_date)
+        values ('UPDATE', old.id, new.executor_id, new.controller_id, new.title, new.description, new.deadline, new.version, new.last_modified_by, new.last_modified_date);
+        RETURN new;
 
-    ELSIF TG_OP = 'INSERT' THEN
-        INSERT INTO tasks_history(operation, task_id, executor_id_new, controller_id_new, title_new, description_new, deadline_new, version, modified_by, modified_date)
-        VALUES ('INSERT', new.id, new.executor_id, new.controller_id, new.title, new.description, new.deadline, new.version, new.last_modified_by, current_timestamp);
-        RETURN NEW;
-    END IF;
-    RETURN NULL;
-END;
+    elseif tg_op = 'INSERT' then
+        insert into tasks_history(operation, task_id, executor_id_new, controller_id_new, title_new, description_new, deadline_new, version, modified_by, modified_date)
+        values ('INSERT', new.id, new.executor_id, new.controller_id, new.title, new.description, new.deadline, new.version, new.last_modified_by, new.last_modified_date);
+        return new;
+    end if;
+    return null;
+end;
 $BODY$
-LANGUAGE plpgsql;
+language plpgsql;
 
-CREATE TRIGGER history_tasks
-    AFTER INSERT OR UPDATE ON tasks
-    FOR EACH ROW EXECUTE PROCEDURE tasks_history();
+create trigger history_tasks
+    after insert or update on tasks
+    for each row execute procedure tasks_history();
+
+create or replace view tasks_history_view    as
+    select
+    id,
+    operation,
+    task_id,
+    executor_id_new,
+    controller_id_new,
+    title_new,
+    description_new,
+    deadline_new,
+    version,
+    modified_by,
+    modified_date
+    from tasks_history;

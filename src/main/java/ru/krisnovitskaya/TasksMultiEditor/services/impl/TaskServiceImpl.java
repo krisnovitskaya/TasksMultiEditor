@@ -3,8 +3,10 @@ package ru.krisnovitskaya.TasksMultiEditor.services.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.krisnovitskaya.TasksMultiEditor.configs.JmsConfig;
 import ru.krisnovitskaya.TasksMultiEditor.diff.DiffComputeHelper;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.NewTaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.TaskDto;
@@ -31,6 +33,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserRepository userRepository;
     private final TaskMapper taskMapper;
 
+    private final JmsTemplate jmsTemplate;
     private final DiffComputeHelper diffComputeHelper;
 
     @Transactional
@@ -42,8 +45,9 @@ public class TaskServiceImpl implements TaskService {
         taskNew.setDeadline(newDto.deadline() == null ? LocalDate.now() : newDto.deadline());
         userRepository.findById(newDto.controllerId()).ifPresent(taskNew::setController);
         userRepository.findById(newDto.executorId()).ifPresent(taskNew::setExecutor);
-        Task taskFromDB = taskRepository.save(taskNew);
-        return taskMapper.fromEntity(taskFromDB);
+        TaskDto insertedDto = taskMapper.fromEntity(taskRepository.saveAndFlush(taskNew));
+        jmsTemplate.convertAndSend(JmsConfig.TASK_CREATE, insertedDto);
+        return insertedDto;
     }
 
     public List<TaskDto> getAll() {
@@ -57,8 +61,9 @@ public class TaskServiceImpl implements TaskService {
             throw new MultiUpdateException(diffComputeHelper.computeDiff(taskMapper.fromEntity(taskDb), updated));
         }
         updateEntityByDtoValue(taskDb, updated);
-        Task saved = taskRepository.saveAndFlush(taskDb);
-        return taskMapper.fromEntity(saved);
+        TaskDto savedDto = taskMapper.fromEntity(taskRepository.saveAndFlush(taskDb));
+        if(savedDto.version() > updated.version()) jmsTemplate.convertAndSend(JmsConfig.TASK_CHANGE, savedDto);
+        return savedDto;
     }
 
     private void updateEntityByDtoValue(Task task, UpdateTaskDto dto) {

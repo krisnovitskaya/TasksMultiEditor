@@ -46,11 +46,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return userRepository.findAll().stream().map(userMapper::fromEntity).collect(Collectors.toList());
     }
 
-    public UserDto updateById2() {
-        Long id = 2l;
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(String.format("User with id=%d not exists", id)));
-        user.setUsername(user.getUsername().concat("-upd"));
-        User user1 = userRepository.saveAndFlush(user);
-        return userMapper.fromEntity(user1);
+    @Override
+    public String findEmailById(Long id) {
+        return userRepository.findEmailById(id).orElseThrow(() -> new ResourceNotFoundException(String.format("User with id=%d not exists", id)));
     }
 }
