@@ -1,6 +1,6 @@
 insert into users(username, password, email)
 values
-    ('admin', '$2a$10$tZDY1/sJwv7CmNLt.yDAzeRqwHnuyNHEIT/Id5AWYHgOmFyv8TG.6', 'admin@admin.ru'), --password13
+    ('admin', '$2a$10$tZDY1/sJwv7CmNLt.yDAzeRqwHnuyNHEIT/Id5AWYHgOmFyv8TG.6', 'taskeditor.service@gmail.com'), --password13
     ('ivanovaa', '$2a$12$n6KY4mpI2RdcBQWwyM4msudGmPD6gXxQDjKDQiXojmzykVYhtvaem', 'ivanovaa@tasks-editor.ru'),   --id 2 user     100
     ('petrovss', '$2a$12$n6KY4mpI2RdcBQWwyM4msudGmPD6gXxQDjKDQiXojmzykVYhtvaem',  'petrovss@tasks-editor.ru');   --id 3 user     100
 
