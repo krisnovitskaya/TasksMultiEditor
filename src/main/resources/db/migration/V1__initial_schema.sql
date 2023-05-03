@@ -23,7 +23,7 @@ create table if not exists users_roles(
 create table if not exists tasks(
     id              	bigserial primary key,
     executor_id      	bigint not null,
-    controller_id     	bigint,
+    controller_id     	bigint not null,
     title              	varchar(255) not null,
     description     	text not null,
     deadline            date not null default now(),
@@ -40,7 +40,7 @@ create table if not exists tasks_history(
     id              	bigserial primary key,
     operation           varchar(10),
     task_id             bigint not null,
-    executor_id_new     bigint,
+    executor_id_new     bigint not null,
     controller_id_new   bigint,
     title_new           varchar(255),
     description_new     text not null,

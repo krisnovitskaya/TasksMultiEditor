@@ -31,7 +31,7 @@ public class TaskChangeListener {
     public void listenCreate(@Payload TaskDto newTask) throws JsonProcessingException {
         log.debug("listenCreate {}", newTask);
         mailSenderService.sendMail(newTask.executor().email(), "New Task Assign", objectMapper.writeValueAsString(newTask));
-        if (newTask.controller() != null && !newTask.controller().id().equals(newTask.executor().id())) {
+        if (!newTask.controller().id().equals(newTask.executor().id())) {
             mailSenderService.sendMail(newTask.controller().email(), "New Task to Control", objectMapper.writeValueAsString(newTask));
         }
     }
@@ -42,7 +42,7 @@ public class TaskChangeListener {
         TaskHistoryDto historyTaskVersionBefore = historyTaskService.findHistoryByTaskIdAndVersion(updatedTask.id(), updatedTask.version() - 1);
         HistoryDiffTaskDto historyDiffTaskDto = diffComputeHelper.computeHistoryDiff(historyTaskVersionBefore, updatedTask);
         mailSenderService.sendMail(updatedTask.executor().email(), "Task Updated", objectMapper.writeValueAsString(historyDiffTaskDto));
-        if (updatedTask.controller() != null && !updatedTask.controller().id().equals(updatedTask.executor().id())) {
+        if (!updatedTask.controller().id().equals(updatedTask.executor().id())) {
             mailSenderService.sendMail(updatedTask.controller().email(), "Task Updated", objectMapper.writeValueAsString(historyDiffTaskDto));
         }
     }

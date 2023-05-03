@@ -22,7 +22,7 @@ public class GlobalExceptionsHandler {
     @ExceptionHandler
     public ResponseEntity<DiffTaskDto> handleMultiUpdateException(MultiUpdateException e) {
         log.info("handle MultiUpdateException: username={}, taskId={}", SecurityUtils.getCurrentUser(), e.getDiffTaskDto().getId());
-        return new ResponseEntity<>(e.getDiffTaskDto(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(e.getDiffTaskDto(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
