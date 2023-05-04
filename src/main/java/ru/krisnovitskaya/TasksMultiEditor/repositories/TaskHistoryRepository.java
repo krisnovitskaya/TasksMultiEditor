@@ -13,6 +13,5 @@ public interface TaskHistoryRepository extends JpaRepository<TaskHistory, Long> 
     @Query("select t from TaskHistory t where t.taskId = :taskId")
     List<TaskHistory> findHistoryByTaskId(@Param("taskId") Long taskId);
 
-    @Query("select t from TaskHistory t where t.taskId = :taskId and t.version = :version")
-    Optional<TaskHistory> findHistoryByTaskIdANdVersion(@Param("taskId") Long taskId, @Param("version") int version);
+    Optional<TaskHistory> findOneByTaskIdAndVersion(@Param("taskId") Long taskId, @Param("version") int version);
 }

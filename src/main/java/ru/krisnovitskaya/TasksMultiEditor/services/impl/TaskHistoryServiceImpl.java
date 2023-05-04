@@ -21,7 +21,7 @@ public class TaskHistoryServiceImpl implements TaskHistoryService {
 
     @Override
     public TaskHistoryDto findHistoryByTaskIdAndVersion(Long id, int version) {
-        TaskHistory taskHistory = repository.findHistoryByTaskIdANdVersion(id, version).orElseThrow(() -> new ResourceNotFoundException(String.format("TaskHistory with id=%d and version=%dnot exists", id, version)));
+        TaskHistory taskHistory = repository.findOneByTaskIdAndVersion(id, version).orElseThrow(() -> new ResourceNotFoundException(String.format("TaskHistory with id=%d and version=%dnot exists", id, version)));
         return new TaskHistoryDto(taskHistory);
     }
 }

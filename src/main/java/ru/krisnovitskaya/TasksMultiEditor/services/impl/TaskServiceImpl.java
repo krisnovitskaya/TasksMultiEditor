@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.krisnovitskaya.TasksMultiEditor.configs.JmsConfig;
 import ru.krisnovitskaya.TasksMultiEditor.diff.DiffComputeHelper;
+import ru.krisnovitskaya.TasksMultiEditor.dtos.DiffTaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.NewTaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.TaskDto;
 import ru.krisnovitskaya.TasksMultiEditor.dtos.UpdateTaskDto;
@@ -18,6 +19,7 @@ import ru.krisnovitskaya.TasksMultiEditor.mappers.TaskMapper;
 import ru.krisnovitskaya.TasksMultiEditor.repositories.TaskRepository;
 import ru.krisnovitskaya.TasksMultiEditor.repositories.UserRepository;
 import ru.krisnovitskaya.TasksMultiEditor.services.TaskService;
+import ru.krisnovitskaya.TasksMultiEditor.utils.SecurityUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,9 +45,10 @@ public class TaskServiceImpl implements TaskService {
         taskNew.setTitle(newDto.title());
         taskNew.setDescription(newDto.description());
         taskNew.setDeadline(newDto.deadline() == null ? LocalDate.now() : newDto.deadline());
-        userRepository.findById(newDto.controllerId()).ifPresent(taskNew::setController);
-        userRepository.findById(newDto.executorId()).ifPresent(taskNew::setExecutor);
+        taskNew.setController(userRepository.findById(newDto.controllerId()).orElseThrow(() -> new ResourceNotFoundException(String.format("User with id=%d not exists", newDto.controllerId()))));
+        taskNew.setExecutor(userRepository.findById(newDto.executorId()).orElseThrow(() -> new ResourceNotFoundException(String.format("User with id=%d not exists", newDto.executorId()))));
         TaskDto insertedDto = taskMapper.fromEntity(taskRepository.saveAndFlush(taskNew));
+        log.debug("User {} Insert new Task: {}", SecurityUtils.getCurrentUser(), insertedDto);
         jmsTemplate.convertAndSend(JmsConfig.TASK_CREATE, insertedDto);
         return insertedDto;
     }
@@ -58,11 +61,16 @@ public class TaskServiceImpl implements TaskService {
     public TaskDto update(UpdateTaskDto updated) {
         Task taskDb = taskRepository.findByIdLock(updated.id()).orElseThrow(() -> new ResourceNotFoundException(String.format("Task with id=%d not exists", updated.id())));
         if (taskDb.getVersion() != updated.version()) {
-            throw new MultiUpdateException(diffComputeHelper.computeDiff(taskMapper.fromEntity(taskDb), updated));
+            DiffTaskDto diffTaskDto = diffComputeHelper.computeDiff(taskMapper.fromEntity(taskDb), updated);
+            log.info("User {} Cant`t Update Task. Return DiffDto: {}", SecurityUtils.getCurrentUser(), diffTaskDto);
+            throw new MultiUpdateException(diffTaskDto);
         }
         updateEntityByDtoValue(taskDb, updated);
         TaskDto savedDto = taskMapper.fromEntity(taskRepository.saveAndFlush(taskDb));
-        if(savedDto.version() > updated.version()) jmsTemplate.convertAndSend(JmsConfig.TASK_CHANGE, savedDto);
+        log.debug("User {} Update Task: {}", SecurityUtils.getCurrentUser(), savedDto);
+        if(savedDto.version() > updated.version()) {
+            jmsTemplate.convertAndSend(JmsConfig.TASK_CHANGE, savedDto);
+        }
         return savedDto;
     }
 

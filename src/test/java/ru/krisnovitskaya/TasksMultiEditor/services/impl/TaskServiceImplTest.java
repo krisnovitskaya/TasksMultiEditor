@@ -73,7 +73,7 @@ class TaskServiceImplTest {
     }
 
     @RepeatedTest(50)
-    void shouldWaitAnotherLockEndBeforeUpdate() throws ExecutionException, InterruptedException {
+    void shouldWaitAnotherLockEndBeforeUpdate() throws ExecutionException, InterruptedException, TimeoutException {
         ExecutorService executorService = Executors.newFixedThreadPool(2);
 
         var dto = new NewTaskDto(2L, 3L, "Wait Title", "First task description", LocalDate.of(2023, 6, 15));
@@ -100,12 +100,8 @@ class TaskServiceImplTest {
         });
 
 
-        while (!waitFuture.isDone() || !insertFuture.isDone()) {
-            //waiting
-        }
-
-        Long timeWaiting = waitFuture.get();
-        Long insertWaiting = insertFuture.get();
+        Long timeWaiting = waitFuture.get(300, TimeUnit.MILLISECONDS);
+        Long insertWaiting = insertFuture.get(300, TimeUnit.MILLISECONDS);
 
         System.out.println("timeWaiting=" + timeWaiting);
         System.out.println("insertWaiting=" + insertWaiting);
@@ -136,7 +132,7 @@ class TaskServiceImplTest {
                 }catch (MultiUpdateException e){
                     excUpdate.add(e.getDiffTaskDto());
                 }catch (InterruptedException e){
-
+                    throw new RuntimeException(e.getMessage());
                 }
             }));
         }

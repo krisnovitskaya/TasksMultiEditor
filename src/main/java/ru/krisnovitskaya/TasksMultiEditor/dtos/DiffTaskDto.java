@@ -3,6 +3,7 @@ package ru.krisnovitskaya.TasksMultiEditor.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Getter
+@ToString
 public class DiffTaskDto {
     private Long id;
     private Long theirExecutor;
