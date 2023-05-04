@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+
+  artemis:
+    image: vromero/activemq-artemis:2.6.1
+    volumes:
+      - ./node0:/var/lib/artemis/etc-override
+    environment:
+      ENABLE_JMX_EXPORTER: "true"
+      ARTEMIS_MIN_MEMORY: "1512M"
+      ARTEMIS_MAX_MEMORY: "2000M"
+      ARTEMIS_USERNAME: "artemis"
+      ARTEMIS_PASSWORD: "simetraehcapa"
+    ports:
+      - "8161:8161"
+      - "61616:61616"
+
+  postgres:
+    image: postgres:13.8
+    domainname: postgres
+    ports:
+      - "5430:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=32167
+      - POSTGRES_DB=tasksDB
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-U", "postgres" ]
+      interval: 5s
+      timeout: 1s
+      retries: 2
+
+  flyway:
+    image: boxfuse/flyway
+    command: -url=jdbc:postgresql://postgres:5432/tasksDB -schemas=public -user=postgres -password=32167 -connectRetries=30 migrate
+    volumes:
+      - ./db/migration:/flyway/sql
+    depends_on:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
